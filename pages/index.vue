@@ -86,7 +86,7 @@
                 <div v-else>
                     <div v-for="(userdata, index) in searchresult" :key="index" class="">
                         <div v-if="showing == 'All' || userdata.payment_status == showing" class="flex flex-nowrap p-4 pl-11 mt-3 overflow-x-auto border-b border-[#D9D5EC]">
-                            <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" v-model="checkall" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img src="~/assets/down-arrow.png"  class="-mt-3 ml-4 inline-block"></button></div>
+                            <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" v-model="checkall" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img src="~/assets/down-arrow.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"></button></div>
                             <div class="w-1/2 overflow-x-auto text-sm">{{ userdata.first_name }} {{ userdata.last_name }} <br> <span class="text-gray-400 text-xs">{{ userdata.email }}</span></div>
                             <div class="w-9/12 overflow-x-auto text-xs">
                                 <span class="rounded-2xl px-2" :class="{ 'bg-[#E6E6F2] text-[#4A4AFF]' : userdata.user_status == 'Active', 'text-[#6E6893] bg-[#F2F0F9]' : userdata.user_status == 'Inactive'}"><span :class="{ 'bg-[#4A4AFF]' : userdata.user_status == 'Active', 'bg-[#6E6893]' : userdata.user_status == 'Inactive'}" class="w-2 h-2 mr-1 inline-block rounded-full"></span>{{ userdata.user_status }}</span>
