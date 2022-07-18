@@ -570,8 +570,8 @@ let limitnum = endss
 
 watchEffect(() => {
 
-    console.log(startnum.value)
-    console.log(endnum.value)
+    // console.log(startnum.value)
+    // console.log(endnum.value)
 
     if(showing.value != 'All'){
         usingusersdata.value = usersdata.filter(x => x.payment_status == showing.value)
@@ -623,7 +623,7 @@ function searcher(){
         searchresult.value = usingusersdata.value.filter( (x) => x.first_name.match(regsearch) || x.last_name.match(regsearch) || x.email.match(regsearch) || x.payment_date.match(regsearch) || x.due_date.match(regsearch))
         usingsliceddata.value = searchresult.value.slice(startnum.value, endnum.value)
         // usingusersdata.value = searchresult.value
-        console.log(searchresult.value)    
+        // console.log(searchresult.value)    
     }
     
 }
