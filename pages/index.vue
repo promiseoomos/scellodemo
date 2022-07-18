@@ -37,7 +37,7 @@
                     <div class="w-1/5 overflow-x-auto text-xs text-right"><img src="~/assets/More.png" class="inline-block"></div>
                 </div>
                 <div class="" v-if="searchtext.length == 0">
-                    <div v-for="(userdata, index) in usingusersdata" :key="index" class="">
+                    <div v-for="(userdata, index) in usingsliceddata" :key="index" class="">
                         <div v-if="showing == 'All' || userdata.payment_status == showing" class="flex flex-nowrap p-4 pl-11 mt-3 overflow-x-auto border-b border-[#D9D5EC]">
                             <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" v-model="checkall" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img src="~/assets/down-arrow.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"></button></div>
                             <div class="w-1/2 overflow-x-auto text-sm">{{ userdata.first_name }} {{ userdata.last_name }} <br> <span class="text-gray-400 text-xs">{{ userdata.email }}</span></div>
@@ -84,7 +84,7 @@
                     </div>                
                 </div>
                 <div v-else>
-                    <div v-for="(userdata, index) in searchresult" :key="index" class="">
+                    <div v-for="(userdata, index) in usingsliceddata" :key="index" class="">
                         <div v-if="showing == 'All' || userdata.payment_status == showing" class="flex flex-nowrap p-4 pl-11 mt-3 overflow-x-auto border-b border-[#D9D5EC]">
                             <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" v-model="checkall" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img src="~/assets/down-arrow.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"></button></div>
                             <div class="w-1/2 overflow-x-auto text-sm">{{ userdata.first_name }} {{ userdata.last_name }} <br> <span class="text-gray-400 text-xs">{{ userdata.email }}</span></div>
@@ -136,23 +136,23 @@
 
                 <div v-if="searchtext.length == 0" class="flex flex-nowrap gap-24 justify-end bg-[#F4F2FF] text-[#6E6893] p-6">
                     <div class="">Rows per page 
-                        <select v-model="rowsperpage" class="bg-transparent">
+                        <select v-model="intervalnum" @change="increaserows" class="bg-transparent">
                             <option v-for="(option, index) in perpageoptions" :key="index" :value="option">{{ option }}</option>
                         </select> 
                     
                     </div>
-                    <div class="">{{ startnum + 1 }} - {{ usingusersdata.length < endnum ? usingusersdata.length : endnum }} of {{ usingusersdata.length }}</div>
-                    <div class="flex gap-16"><button @click="pages > 1 ? pages = pages - 1 : pages = 1"><img src="~/assets/arrow-left.png" class="h-fit"/></button> <button @click="pages < Math.ceil(usingusersdata.length/ rowsperpage) ? pages = pages + 1 : pages = Math.ceil(usingusersdata.length/ rowsperpage)"><img src="~/assets/arrow-right.png" class="h-fit"/></button> </div>
+                    <div class="">{{ usingusersdata.length > 0 ?  startnum + 1 : 0 }} - {{ usingusersdata.length < endnum ? usingusersdata.length : endnum }} of {{ usingusersdata.length }}</div>
+                    <div class="flex gap-16"><button @click="pages > 1 ? pages = pages - 1 : pages = 1"><img src="~/assets/arrow-left.png" class="h-fit"/></button> <button @click="pages < Math.ceil(usingusersdata.length/ intervalnum) ? pages = pages + 1 : pages = Math.ceil(usingusersdata.length/ intervalnum)"><img src="~/assets/arrow-right.png" class="h-fit"/></button> </div>
                 </div>
                 <div v-else class="flex flex-nowrap gap-24 justify-end bg-[#F4F2FF] text-[#6E6893] p-6">
                     <div class="">Rows per page 
-                        <select v-model="rowsperpage" class="bg-transparent">
+                        <select v-model="intervalnum" class="bg-transparent">
                             <option v-for="(option, index) in perpageoptions" :key="index" :value="option">{{ option }}</option>
                         </select> 
                     
                     </div>
-                    <div class="">{{ startnum + 1 }} - {{ searchresult.length < endnum ? searchresult.length : endnum }} of {{ searchresult.length }}</div> {{ pages }} {{ Math.ceil(searchresult.length / rowsperpage) }}
-                    <div class="flex gap-16"><button @click="pages > 1 ? pages = pages - 1 : pages = 1"><img src="~/assets/arrow-left.png" class="h-fit"/></button> <button @click="pages < Math.ceil(searchresult.length / rowsperpage) ? pages = pages + 1 : pages = Math.ceil(searchresult.length / rowsperpage)"><img src="~/assets/arrow-right.png" class="h-fit"/></button> </div>
+                    <div class="">{{ searchresult.length > 0 ?  startnum + 1 : 0 }} - {{ searchresult.length < endnum ? searchresult.length : endnum }} of {{ searchresult.length }}</div>
+                    <div class="flex gap-16"><button @click="pages > 1 ? pages = pages - 1 : pages = 1"><img src="~/assets/arrow-left.png" class="h-fit"/></button> <button @click="pages < Math.ceil(searchresult.length / intervalnum) ? pages = pages + 1 : pages = Math.ceil(searchresult.length / intervalnum)"><img src="~/assets/arrow-right.png" class="h-fit"/></button> </div>
                 </div>
             
             </div>
@@ -167,12 +167,14 @@ const users = await useFetch("https://cornie-assessment.herokuapp.com/users/CcUy
 let showing = ref('All')
 let showingdown = ref(false)
 let showingdownid = ref(0)
-let rowsperpage = ref(10)
+// let intervalnum = ref(10)
 const perpageoptions = ref([10, 25, 50, 100, 250, 500])
 const searchtext = ref("")
 let searchresult = ref([])
+let checkall = ref(false)
 
 let usingusersdata = ref([])
+let usingsliceddata = ref([])
 
 const usersdata = reactive([
         {
@@ -552,32 +554,41 @@ let endnum = ref(10)
 const endss = computed(() => { return usingusersdata.value.length })
 let limitnum = endss
 
-usingusersdata.value = usersdata;
+// usingusersdata.value = usersdata;
 // console.log(usingusersdata.value)
 
 watchEffect(() => {
 
-    if(searchtext.value == 0){
-        startnum.value = ((pages.value - 1) * intervalnum.value)
-        endnum.value = endnum.value * pages.value > usingusersdata.value.length ? usingusersdata.value.length : endnum.value * pages.value
-    }else{
-        startnum.value = pages.value * intervalnum.value
-        endnum.value = pages.value > Math.ceil(usingusersdata.length/ rowsperpage) ? endnum.value : endnum.value * pages.value
-    }
-    
-})
+    console.log(startnum.value)
+    console.log(endnum.value)
 
-watchEffect(() => {
     if(showing.value != 'All'){
-        usingusersdata.value = usersdata.filter(x => x.payment_status == showing.value).slice(startnum.value, endnum.value)
+        usingusersdata.value = usersdata.filter(x => x.payment_status == showing.value)
+        usingsliceddata.value = usingusersdata.value.slice(startnum.value, endnum.value)
     }else{
-        usingusersdata.value = usersdata; 
+        usingusersdata.value = usersdata;
+        usingsliceddata.value = usingusersdata.value.slice(startnum.value, endnum.value)
+         
     }
 
     searcher();
 
-    // console.log(usingusersdata.value)
+    // console.log(usingusersdata.value.length)
 })
+
+watchEffect(() => {
+
+    
+    if(searchtext.value == 0){
+        startnum.value = ((pages.value - 1) * intervalnum.value)
+        endnum.value = intervalnum.value * pages.value > usingusersdata.value.length ? usingusersdata.value.length : intervalnum.value * pages.value
+    }else{
+        startnum.value = ((pages.value - 1) * intervalnum.value)
+        endnum.value = intervalnum.value * pages.value > usingusersdata.value.length ? usingusersdata.value.length : intervalnum.value * pages.value
+    }
+    
+})
+
 
 function searcher(){
     // alert("searching")
@@ -591,7 +602,7 @@ function searcher(){
         let regsearch = new RegExp(`${searchtext.value}`, 'gi')
         // let regsearch2 = /searchtext.value/ig
         searchresult.value = usingusersdata.value.filter( (x) => x.first_name.match(regsearch) || x.last_name.match(regsearch) || x.email.match(regsearch) || x.payment_date.match(regsearch) || x.due_date.match(regsearch))
-
+        usingsliceddata.value = searchresult.value.slice(startnum.value, endnum.value)
         // usingusersdata.value = searchresult.value
         console.log(searchresult.value)    
     }
