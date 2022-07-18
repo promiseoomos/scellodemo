@@ -10,7 +10,7 @@
                     <button @click="showing = 'Overdue'" class="w-fit">Overdue <span :class="{'border-b-2 border-blue-800' : showing == 'Overdue'}" class="relative  top-2 w-full inline-block"></span></button>
                 </div>
                 <div class="">
-                    <p>Total Payable amount: <span class="text-3xl font-bold text-[#6D5BD0]">$900 USD</span></p>
+                    <p class=" text-[#6E6893]">Total Payable amount: <span class="text-3xl font-bold text-[#6D5BD0]">$900</span><span class="text-3xl text-[#6E6893]"> USD</span></p>
                 </div>
             </div>
 
@@ -38,8 +38,8 @@
                 </div>
                 <div class="" v-if="searchtext.length == 0">
                     <div v-for="(userdata, index) in usingsliceddata" :key="index" class="">
-                        <div v-if="showing == 'All' || userdata.payment_status == showing" class="flex flex-nowrap p-4 pl-11 mt-3 overflow-x-auto border-b border-[#D9D5EC]">
-                            <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" v-model="checkall" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img src="~/assets/down-arrow.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"></button></div>
+                        <div v-if="showing == 'All' || userdata.payment_status == showing" class="flex flex-nowrap p-4 pl-11 pt-3 overflow-x-auto border-b border-[#D9D5EC]" :class="{'bg-[#F2F0F9]' : currentitemid == userdata.trx_id && currentlychecked == true }">
+                            <div class="w-1/3 overflow-x-auto text-xs"><input type="checkbox" @change="currentlyOn(userdata.trx_id, $event)" class="p-2 w-5 h-5 rounded-md inline-block"/> <button @click="showingdownid = userdata.trx_id; showingdown = !showingdown" class="inline-block ml-4 mt-3"><img v-if="showingdown == true" src="~/assets/Up.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"><img v-if="showingdown == false" src="~/assets/down-arrow.png"  class="-mt-3 ml-4 h-5 w-5 inline-block"></button></div>
                             <div class="w-1/2 overflow-x-auto text-sm">{{ userdata.first_name }} {{ userdata.last_name }} <br> <span class="text-gray-400 text-xs">{{ userdata.email }}</span></div>
                             <div class="w-9/12 overflow-x-auto text-xs">
                                 <span class="rounded-2xl px-2" :class="{ 'bg-[#E6E6F2] text-[#4A4AFF]' : userdata.user_status == 'Active', 'text-[#6E6893] bg-[#F2F0F9]' : userdata.user_status == 'Inactive'}"><span :class="{ 'bg-[#4A4AFF]' : userdata.user_status == 'Active', 'bg-[#6E6893]' : userdata.user_status == 'Inactive'}" class="w-2 h-2 mr-1 inline-block rounded-full"></span>{{ userdata.user_status }}</span>
@@ -53,7 +53,17 @@
                             <!-- <div class="w-1/3 overflow-x-auto text-xs">view more</div> -->
                             <div class="w-1/5 overflow-x-auto text-xs text-right">
                                 <button><span class="inline-block mr-3 text-[#6E6893]">View more</span> <img src="~/assets/More.png" class="inline-block"></button>
+                            
                             </div>
+                            
+                        </div>
+                        <div class="absolute hidden h-contain m-2 p-2 z-5 w-40 right-2 bg-gray-200">
+                            
+                            <div class="absolute -top-4 right-2 h-fit bg-white"><img src="~/assets/ellipse.png"  class=""> <span class="relative -right-2 -top-6">x</span></div>
+                            <NuxtLink class="block">Edit</NuxtLink>
+                            <NuxtLink class="block">View Profile</NuxtLink>
+                            <NuxtLink class="block text-[#007F00]">Activate User</NuxtLink>
+                            <NuxtLink class="block text-[#D30000] mt-2">Delete</NuxtLink>
                         </div>
 
                         <div class="bg-[#F4F2FF]" v-if="showingdownid == userdata.trx_id && showingdown == true">
@@ -554,6 +564,7 @@ let endnum = ref(10)
 const endss = computed(() => { return usingusersdata.value.length })
 let limitnum = endss
 
+
 // usingusersdata.value = usersdata;
 // console.log(usingusersdata.value)
 
@@ -588,6 +599,14 @@ watchEffect(() => {
     }
     
 })
+
+let currentitemid = ref(0)
+let currentlychecked = ref(false)
+
+function currentlyOn(uid, event){
+    currentitemid.value = uid
+    currentlychecked.value = event.target.checked 
+}
 
 
 function searcher(){
